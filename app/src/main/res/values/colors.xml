@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Deep kumkum-brown; matches the flat base of the in-app splash so the hand-off is seamless -->
+    <color name="splash_bg">#FF2E0C05</color>
+</resources>

@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>जप माला – मंत्र जप का Android ऐप</title>
+<meta name="description" content="Jap Mala: 108 मनकों की माला, 12 मंत्र और रोज़ का हिसाब। Free Android ऐप, offline चलता है, न login न ads। APK सीधे download करें.">
+<meta name="theme-color" content="#2A0B05">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:title" content="जप माला – मंत्र जप का Android ऐप">
+<meta property="og:description" content="108 मनकों की माला, 12 मंत्र और रोज़ का हिसाब। Free, offline, बिना ads।">
+<meta property="og:image" content="https://mrsagarrb.github.io/jap-mala/img/home.jpg">
+<meta property="og:url" content="https://mrsagarrb.github.io/jap-mala/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;500;600&family=Noto+Serif+Devanagari:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --night: #2A0B05;
+    --ember: #4A1208;
+    --kumkum: #9C2A12;
+    --saffron: #FF9933;
+    --gold: #F0C050;
+    --paper: #FFF0D2;
+    --muted: rgba(255, 240, 210, .74);
+    --line: rgba(240, 192, 80, .28);
+    --serif: "Noto Serif Devanagari", "Noto Serif", Georgia, serif;
+    --sans: "Hind", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--night);
+    color: var(--paper);
+    font: 400 1.0625rem/1.65 var(--sans);
+  }
+  img { display: block; max-width: 100%; height: auto; }
+  a { color: var(--gold); text-underline-offset: 3px; }
+  :focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; border-radius: 4px; }
+
+  .wrap { width: min(1120px, 100% - 40px); margin-inline: auto; }
+  h1, h2, h3 { font-family: var(--serif); font-weight: 700; line-height: 1.25; margin: 0; }
+
+  /* ── header ── */
+  .top { display: flex; align-items: center; justify-content: space-between; padding-block: 18px; }
+  .brand { display: flex; align-items: center; gap: 12px; color: var(--paper); text-decoration: none; font: 700 1.35rem/1 var(--serif); }
+  .brand img { width: 38px; height: 38px; }
+  .top .small-link { font-weight: 500; }
+
+  /* ── buttons ── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--saffron); color: #3A0F06;
+    font: 600 1.15rem/1 var(--sans);
+    padding: 18px 28px; border-radius: 999px; text-decoration: none;
+    box-shadow: 0 0 0 1px rgba(255, 233, 168, .6) inset, 0 10px 30px -10px rgba(255, 153, 51, .55);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn:active { transform: translateY(0) scale(.98); }
+  .btn svg { width: 22px; height: 22px; flex: none; }
+
+  /* ── hero ── */
+  .hero {
+    background:
+      radial-gradient(60% 55% at 78% 42%, rgba(184, 66, 26, .55), rgba(110, 31, 12, .25) 55%, transparent 75%);
+  }
+  .hero-grid { display: grid; gap: 36px; align-items: center; padding-block: 28px 64px; }
+  .hero h1 { font-size: clamp(2.5rem, 7.2vw, 4.4rem); letter-spacing: -.01em; }
+  .hero .lead { font-size: 1.2rem; max-width: 34ch; color: var(--muted); margin: 20px 0 30px; }
+  .facts { display: flex; flex-wrap: wrap; margin: 24px 0 0; padding: 0; list-style: none; color: var(--muted); font-size: .98rem; }
+  .facts li { padding-right: 16px; margin-right: 16px; border-right: 1px solid var(--line); }
+  .facts li:last-child { border-right: 0; margin-right: 0; padding-right: 0; }
+  .facts b { color: var(--paper); font-weight: 600; }
+
+  /* the live mala */
+  .mala-wrap { justify-self: center; width: min(100%, 460px); text-align: center; }
+  .mala { position: relative; aspect-ratio: 1; container-type: inline-size; }
+  .mala .thread { position: absolute; inset: 6%; border: 1px solid var(--line); border-radius: 50%; }
+  .mala .ring { position: absolute; inset: 0; }
+  .bead {
+    position: absolute; width: 2.3%; aspect-ratio: 1; border-radius: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 240, 210, .17);
+  }
+  .bead.on { background: var(--gold); box-shadow: inset -.15cqw -.15cqw .3cqw rgba(120, 70, 0, .45), inset .2cqw .2cqw .3cqw rgba(255, 255, 255, .6); }
+  .bead.sumeru { width: 4.8%; background: var(--kumkum); box-shadow: 0 0 0 .5cqw var(--gold); }
+  @media (prefers-reduced-motion: no-preference) { .bead { transition: background-color .12s linear; } }
+
+  .disc {
+    position: absolute; inset: 14%;
+    display: grid; place-content: center; justify-items: center; gap: 0;
+    border: 0; padding: 0; cursor: pointer; border-radius: 50%;
+    color: var(--ember); font-family: var(--serif);
+    background: radial-gradient(circle at 70% 25%, #FFC66B, #FF9A2E 45%, #E0651A);
+    box-shadow:
+      0 0 0 1.1cqw var(--gold),
+      0 0 0 1.6cqw rgba(74, 18, 8, .6),
+      0 3cqw 8cqw -2cqw rgba(0, 0, 0, .65);
+    -webkit-tap-highlight-color: transparent;
+    user-select: none; touch-action: manipulation;
+    transition: transform .12s cubic-bezier(.3, 1.6, .5, 1);
+  }
+  .disc:active, .disc.pressed { transform: scale(.955); }
+  .disc svg { position: absolute; inset: 13%; width: 74%; height: 74%; fill: var(--ember); opacity: .1; }
+  .disc .n { position: relative; font-size: 17cqw; font-weight: 700; line-height: 1.05; font-variant-numeric: tabular-nums; }
+  .disc .of { position: relative; font: 500 3.9cqw/1.2 var(--sans); opacity: .78; }
+  .disc .r { position: relative; margin-top: 1.6cqw; font: 600 3.9cqw/1.2 var(--sans); }
+  .mala-wrap .cap { margin: 14px 0 0; color: var(--muted); font-size: .95rem; }
+
+  /* ── sections ── */
+  section { padding-block: 72px; }
+  .sec-head { max-width: 22ch; font-size: clamp(1.8rem, 4.4vw, 2.7rem); margin-bottom: 36px; }
+
+  /* screens */
+  .screens { display: flex; gap: 22px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 6px 20px 22px; margin-inline: -20px; scrollbar-width: thin; scrollbar-color: var(--kumkum) transparent; }
+  .shot { flex: 0 0 min(64vw, 250px); scroll-snap-align: center; margin: 0; }
+  .shot img { border: 6px solid #130502; border-radius: 30px; box-shadow: 0 24px 50px -22px #000, 0 0 0 1px var(--line); background: #130502; }
+  .shot figcaption { margin-top: 14px; font-size: .98rem; color: var(--muted); padding-inline: 4px; }
+  .shot:nth-child(2) { margin-top: 28px; }
+
+  /* feature rows */
+  .rows { margin: 0; padding: 0; list-style: none; border-bottom: 1px solid var(--line); }
+  .rows li { display: grid; gap: 4px 40px; padding-block: 22px; border-top: 1px solid var(--line); }
+  .rows h3 { font-size: 1.3rem; }
+  .rows p { margin: 0; color: var(--muted); max-width: 52ch; }
+
+  /* install steps (a real sequence) */
+  .steps { margin: 0; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 28px; max-width: 760px; }
+  .steps li { counter-increment: s; position: relative; padding-left: 64px; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: -2px;
+    width: 44px; height: 44px; border-radius: 50%;
+    display: grid; place-items: center;
+    font: 700 1.3rem/1 var(--serif); color: var(--gold); border: 1.5px solid var(--gold);
+  }
+  .steps h3 { font-size: 1.25rem; margin-bottom: 4px; }
+  .steps p { margin: 0; color: var(--muted); }
+  .verify { margin-top: 44px; max-width: 760px; padding-top: 22px; border-top: 1px solid var(--line); color: var(--muted); font-size: .96rem; }
+  .verify code { display: block; margin-top: 8px; padding: 12px 14px; background: rgba(0, 0, 0, .28); border-radius: 10px; color: var(--paper); font: 400 .82rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; overflow-wrap: anywhere; user-select: all; }
+
+  /* closing band */
+  .band { background: linear-gradient(135deg, #FF9933, #E8731A); color: #3A0F06; padding-block: 64px; }
+  .band .wrap { display: grid; gap: 24px; align-items: center; }
+  .band h2 { font-size: clamp(1.8rem, 4.6vw, 2.8rem); max-width: 18ch; }
+  .band .btn { background: #3A0F06; color: var(--paper); box-shadow: 0 14px 30px -14px rgba(58, 15, 6, .8); justify-self: start; }
+
+  footer { padding-block: 36px 48px; color: var(--muted); font-size: .95rem; text-align: left; }
+  footer .wrap { display: grid; gap: 10px; }
+  footer .shloka { font: 500 1.1rem var(--serif); color: var(--gold); }
+
+  @media (min-width: 880px) {
+    .hero-grid { grid-template-columns: 1.05fr .95fr; padding-block: 36px 88px; }
+    .screens { overflow: visible; justify-content: center; margin-inline: 0; padding-inline: 0; }
+    .shot { flex-basis: 250px; }
+    .rows li { grid-template-columns: 1fr 1.4fr; align-items: baseline; }
+    .band .wrap { grid-template-columns: 1fr auto; }
+    .band .btn { justify-self: end; }
+  }
+  @media (max-width: 879px) { .hero .lead { max-width: 40ch; } }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="om" viewBox="0 0 100 100"><path d="M81.3 88.56Q77.17 88.56 73.23 86.58Q69.29 84.61 65.89 81.42Q62.48 78.24 60.05 74.72L64.65 70.73Q67.4 73.52 70.44 75.51Q73.49 77.51 77.23 77.51Q80.55 77.51 82.87 75.93Q85.19 74.35 86.61 71.77Q88.04 69.18 88.69 66.16Q89.35 63.13 89.35 60.21Q89.35 56.66 88.46 53.56Q87.58 50.47 85.8 48.5Q84.02 46.54 81.37 46.54Q79.04 46.54 77.21 48.17Q75.38 49.79 73.73 52.37Q72.08 54.94 70.35 57.76Q68.62 60.59 66.52 63.16Q64.41 65.73 61.56 67.36Q58.72 68.99 54.8 68.99Q49.75 68.99 46.1 66.77Q42.46 64.56 38.87 60.67L40.22 58.82Q41.53 59.41 43.19 60Q44.86 60.58 46.63 60.58Q50.76 60.58 53.55 58.82Q56.34 57.07 58.35 54.3Q60.36 51.54 62.1 48.38Q63.83 45.22 65.77 42.46Q67.72 39.7 70.41 37.94Q73.11 36.18 77.04 36.18Q81.36 36.18 85.02 38.34Q88.69 40.49 91.68 44.11Q95.34 48.24 97.53 53.52Q99.73 58.81 99.73 65.72Q99.73 71.57 97.71 76.8Q95.69 82.03 91.6 85.3Q87.51 88.56 81.3 88.56ZM35.12 100Q27.21 100 20.69 95.49Q14.17 90.98 9.1 82.95Q4.03 74.92 0.27 64.4L6.75 61.68Q9.84 69.76 13.49 75.6Q17.14 81.44 21.52 84.58Q25.91 87.72 31.14 87.72Q37.36 87.72 40.5 84.41Q43.64 81.1 43.64 76.35Q43.64 72.49 41.77 68.96Q39.9 65.44 36.37 62.67L41.09 60.92Q43.29 62.34 45.01 63.98Q46.73 65.63 48.02 67.34Q51.2 70.56 52.78 74.64Q54.37 78.72 54.37 82.6Q54.37 87.91 51.86 91.84Q49.34 95.77 45.02 97.88Q40.71 100 35.12 100ZM29.28 68.71 22.92 57.26Q33.51 54.11 38.2 50.22Q42.89 46.32 42.89 42.74Q42.89 39.69 40.89 38.43Q38.9 37.17 35.9 37.17Q32.53 37.17 28.47 38.45Q24.4 39.74 20.53 41.73L14.21 29.61Q18.51 27.44 22.78 26.4Q27.05 25.35 31.01 25.35Q35.4 25.35 39.31 27.37Q43.21 29.39 46.68 33.46Q49.1 36.28 50.48 39.85Q51.87 43.42 51.87 47.15Q51.87 54.38 46.53 59.4Q41.19 64.42 29.28 68.71ZM64.47 27.58Q58.41 27.58 53.31 24.89Q48.22 22.21 44.6 17.37Q40.99 12.54 39.16 6.15L45.54 3.81Q47.82 10.4 51.9 14.18Q55.97 17.96 62.62 17.96Q68.72 17.96 72.58 14.24Q76.44 10.52 77.94 2.54L89.23 5.64Q87.92 12.54 84.56 17.47Q81.19 22.4 76.12 24.99Q71.06 27.58 64.47 27.58ZM62.28 12.29Q59.64 12.29 58.01 10.87Q56.39 9.45 56.39 6.17Q56.39 2.88 58.01 1.44Q59.64 0 62.28 0Q64.88 0 66.48 1.44Q68.09 2.88 68.09 6.17Q68.09 9.45 66.48 10.87Q64.88 12.29 62.28 12.29Z"/></symbol>
+</svg>
+
+<header class="wrap top">
+  <a class="brand" href="#"><img src="icon.svg" alt="" width="38" height="38">जप माला</a>
+  <a class="small-link" href="#install">Install कैसे करें</a>
+</header>
+
+<main>
+  <div class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <h1>नाम जपो,<br>गिनती हम रखेंगे।</h1>
+        <p class="lead">Jap Mala एक Android ऐप है: 108 मनकों की माला, 12 मंत्र और रोज़ का हिसाब। Free है, offline चलता है, न login न ads।</p>
+        <a class="btn" href="JapMala-1.0.apk" download>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0l-5-5m5 5l5-5M5 20h14"/></svg>
+          APK download करें
+        </a>
+        <ul class="facts" aria-label="ऐप की जानकारी">
+          <li>Version <b>1.0</b></li>
+          <li>Size <b>1.6 MB</b></li>
+          <li>Android <b>8.0 या नया</b></li>
+        </ul>
+      </div>
+
+      <div class="mala-wrap">
+        <div class="mala" id="mala">
+          <div class="thread" aria-hidden="true"></div>
+          <div class="ring" id="ring" aria-hidden="true"></div>
+          <button class="disc" id="disc" type="button" aria-label="जप गिनें">
+            <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#om"/></svg>
+            <span class="n" id="n">0</span>
+            <span class="of">/ 108</span>
+            <span class="r" id="r">छूकर जप करें</span>
+          </button>
+        </div>
+        <p class="cap">माला पर tap करके देखें, ऐप में भी ऐसे ही गिनती होती है।</p>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <h2 class="sec-head">ऐप ऐसा दिखता है</h2>
+      <div class="screens" tabindex="0" role="group" aria-label="ऐप के screenshots">
+        <figure class="shot"><img src="img/splash.jpg" width="461" height="1000" loading="lazy" alt="Splash screen: गहरे मरून रंग पर सुनहरा ॐ, चारों ओर 108 मनके जल रहे हैं"><figcaption>खुलते ही 108 मनके एक-एक करके जलते हैं।</figcaption></figure>
+        <figure class="shot"><img src="img/home.jpg" width="461" height="1000" loading="lazy" alt="Home screen: केसरिया डिस्क पर 23 / 108, ऊपर मंत्र ॐ नमः शिवाय, नीचे आज का जप और माला की गिनती"><figcaption>बड़े डिस्क को छुएँ, गिनती बढ़ती है।</figcaption></figure>
+        <figure class="shot"><img src="img/mantras.jpg" width="461" height="1000" loading="lazy" alt="मंत्र चुनने की सूची: शिव पंचाक्षरी, श्री राम, हरे कृष्ण महामंत्र, राधे राधे और अन्य"><figcaption>12 मंत्र तैयार हैं, अपना भी जोड़ सकते हैं।</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="sec-head">जप के लिए जो चाहिए, वही</h2>
+      <ul class="rows">
+        <li><h3>108, 54 या 27 मनके</h3><p>पूरी माला या आधी। हर round के बाद माला की गिनती अपने आप बढ़ती है।</p></li>
+        <li><h3>12 मंत्र, और आपका अपना</h3><p>ॐ नमः शिवाय, गायत्री, महामृत्युंजय, हरे कृष्ण, श्री राम और बाकी। हर मंत्र का अलग record रहता है।</p></li>
+        <li><h3>छूते ही गिनती</h3><p>उँगली गिरते ही मनका गिना जाता है, इसलिए तेज़ जप में भी कुछ छूटता नहीं। हर मनके पर हल्का कंपन, माला पूरी होने पर अलग।</p></li>
+        <li><h3>Volume button से जप</h3><p>आँख बंद करके, फ़ोन देखे बिना। Settings में चालू करें।</p></li>
+        <li><h3>आज का जप और नित्य दिन</h3><p>आज कितना हुआ, और लगातार कितने दिन से जप चल रहा है।</p></li>
+        <li><h3>Offline और निजी</h3><p>न login, न ads, न internet की permission। सिर्फ़ vibration की इजाज़त माँगता है। सारा data आपके फ़ोन में ही रहता है।</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="install">
+    <div class="wrap">
+      <h2 class="sec-head">Install कैसे करें</h2>
+      <ol class="steps">
+        <li><h3>APK download करें</h3><p>ऊपर वाले बटन से। Chrome पूछे तो “Download anyway” या “Keep” चुनें।</p></li>
+        <li><h3>Install की इजाज़त दें</h3><p>फ़ाइल खोलते ही Android “Install unknown apps” पूछेगा। अपने browser के लिए एक बार allow करें।</p></li>
+        <li><h3>Install करके खोलें</h3><p>ऐप Play Store पर नहीं है, इसलिए Play Protect “unrecognised app” बता सकता है। “Install anyway” चुनें।</p></li>
+      </ol>
+      <div class="verify">
+        APK की जाँच करना चाहें तो SHA-256 मिलाएँ:
+        <code>e899517375e36413cd43eb17e870f24169eb0421887cfe53742fe009d33bf866</code>
+      </div>
+    </div>
+  </section>
+
+  <div class="band">
+    <div class="wrap">
+      <h2>आज एक माला से शुरू करें।</h2>
+      <a class="btn" href="JapMala-1.0.apk" download>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0l-5-5m5 5l5-5M5 20h14"/></svg>
+        APK download करें
+      </a>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="shloka">॥ ॐ शांतिः शांतिः शांतिः ॥</div>
+    <div>Source code <a href="https://github.com/MrSagarRB/jap-mala">GitHub पर</a> खुला है। Font: Noto Serif Devanagari (SIL OFL 1.1).</div>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const N = 108;
+  const ring = document.getElementById('ring');
+  const disc = document.getElementById('disc');
+  const nEl = document.getElementById('n');
+  const rEl = document.getElementById('r');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // beads on a circle; a larger sumeru bead sits above the gap at the top
+  const beads = [];
+  for (let i = 0; i < N; i++) {
+    const a = (-90 + (i + 0.5) * 360 / N) * Math.PI / 180;
+    const b = document.createElement('span');
+    b.className = 'bead';
+    b.style.left = (50 + 44 * Math.cos(a)) + '%';
+    b.style.top = (50 + 44 * Math.sin(a)) + '%';
+    ring.appendChild(b);
+    beads.push(b);
+  }
+  const s = document.createElement('span');
+  s.className = 'bead sumeru';
+  s.style.left = '50%';
+  s.style.top = '4.2%';
+  ring.appendChild(s);
+
+  let count = 0, malas = 0, locked = false, demo = 0, touched = false;
+
+  function render() {
+    for (let i = 0; i < N; i++) beads[i].classList.toggle('on', i < count);
+    nEl.textContent = count;
+    rEl.textContent = touched ? 'माला ' + malas : 'छूकर जप करें';
+    disc.setAttribute('aria-label', 'जप गिनें। अभी ' + count + ' / ' + N);
+  }
+
+  // one orchestrated moment: the first round lights up on load, like the app's splash
+  function runDemo() {
+    const start = performance.now(), dur = 2200;
+    const step = now => {
+      const p = Math.min((now - start) / dur, 1);
+      count = Math.floor(p * N);
+      render();
+      if (p < 1) { demo = requestAnimationFrame(step); return; }
+      count = N; render();
+      demo = setTimeout(() => { demo = 0; count = 0; render(); }, 700);
+    };
+    demo = requestAnimationFrame(step);
+  }
+  function stopDemo() {
+    if (!demo) return;
+    cancelAnimationFrame(demo); clearTimeout(demo); demo = 0;
+    count = 0;
+  }
+
+  function tap() {
+    if (locked) return;
+    if (demo) stopDemo();
+    touched = true;
+    count++;
+    if (count >= N) {
+      count = N; render();
+      locked = true;
+      setTimeout(() => { count = 0; malas++; locked = false; render(); }, 450);
+      return;
+    }
+    render();
+  }
+
+  // count on touch-down, like the app (keyboard uses click)
+  disc.addEventListener('pointerdown', e => {
+    if (e.button > 0) return;
+    disc.classList.add('pressed'); tap();
+  });
+  const up = () => disc.classList.remove('pressed');
+  disc.addEventListener('pointerup', up);
+  disc.addEventListener('pointerleave', up);
+  disc.addEventListener('pointercancel', up);
+  disc.addEventListener('click', e => { if (e.detail === 0) tap(); });
+  disc.addEventListener('contextmenu', e => e.preventDefault());
+
+  render();
+  if (!reduce) setTimeout(runDemo, 500);
+})();
+</script>
+</body>
+</html>
